@@ -191,11 +191,11 @@ end
 
 %% M1
 
-% load Matfiles/M1.mat;
+load Matfiles/M1.mat;
 U_M1_smooth = movmean(U_M1,149);
 
-set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 22]);
-set(0,'defaultAxesFontSize',18);
+set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 15]);
+set(0,'defaultAxesFontSize',16);
 
 ax1 = figure;
 plot(time,100*U_M1,'LineWidth',1.2,'DisplayName','U_{M1}');
@@ -215,7 +215,7 @@ save Matfiles/M1.mat U_M1 U_M1_smooth -append;
 
 % load('IC3.mat','U','time');
 
-% U_IC3 = load("Matfiles/IC3.mat").U;
+U_IC3 = load("Matfiles/IC3.mat").U;
 U_IC3_smooth = movmean(U,149);
 
 ax2 = figure;
