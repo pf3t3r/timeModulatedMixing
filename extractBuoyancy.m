@@ -1,0 +1,429 @@
+% Here, the following is done:
+% - absolute salinity (SA), conservative temperature (CT), and pressure (p)
+% are loaded.
+% - vertical profiles of SA and CT are calculated using the gsw
+% interpolation method.
+% - N2 is calculated.
+
+% Add subfolders to path
+addpath(genpath(pwd));
+
+clear; clc; close all;
+set(groot,'defaultAxesXGrid','on');
+set(groot,'defaultAxesYGrid','on');
+set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 20]);
+
+%% Load data
+input = load('Data/merged_hourly_unfiltered_data_20142020.mat');
+time = datetime(input.time_grid,'ConvertFrom','datenum');   % time [h], datetime format
+
+dgrid = input.DGRID;
+latitude = input.lat;
+%% update each time with FILENAME, INPUT data, and DEPTHS used
+
+% FILENAME: Update this to track filenames: this should match Part B (!)
+mooring = ["IC3"];
+
+%% Load depth and pressure levels
+
+load Data/WOCE_climatology.mat;
+load Matfiles/p_S.mat;   % doing this in terms of the salinity pressure levels
+
+zqIC1 = [-zax(1:16)',-450:-50:-dgrid(161,2),-dgrid(161,2)];
+zqIC2 = [-zax(1:16)',-450:-50:-dgrid(161,3),-dgrid(161,3)];
+zqIC3 = [-zax(1:16)',-450:-50:-dgrid(161,4),-dgrid(161,4)];
+for i=1:length(zqIC3)-1
+    zqIC3_mid(i) = (zqIC3(i+1) + zqIC3(i))/2;
+end
+zqIC4 = [-zax(1:16)',-450:-50:-dgrid(161,5),-dgrid(161,5)];
+zqM1 = [-zax(1:16)',-450:-50:-dgrid(161,6),-dgrid(161,6)];
+for i=1:length(zqM1)-1
+    zqM1_mid(i) = (zqM1(i+1) + zqM1(i))/2;
+end
+
+p_i_IC1 = gsw_p_from_z(zqIC1,latitude(2));
+p_i_IC2 = gsw_p_from_z(zqIC2,latitude(3));
+p_i_IC3 = gsw_p_from_z(zqIC3,latitude(4));
+p_i_IC4 = gsw_p_from_z(zqIC4,latitude(5));
+p_i_M1 = gsw_p_from_z(zqM1,latitude(6));
+
+% Load pmid shit
+load('Matfiles/IC3.mat','pmid_IC3');
+load('Matfiles/M1.mat','pmid_M1');
+
+save Matfiles/p_i.mat p_i_IC1 p_i_IC2 p_i_IC3 p_i_IC4 p_i_M1;
+
+%% Interpolate CT and SA for five moorings using gsw_SA_CT_interp
+
+% NOTE that the interpolation does not work for IC2 currently as there is
+% too much missing data (I think).
+
+% IC1
+if isfile('Matfiles/SA_CT_interpolated.mat')
+    load('Matfiles/SA_CT_interpolated.mat','SA_IC1_i','CT_IC1_i');
+    disp('IC1: SA and CT already interpolated');
+else
+    disp('IC1: interpolating SA and CT...')
+    load Matfiles/SA_IC1.mat;
+    load Matfiles/CT_IC1.mat;
+    [SA_IC1_i,CT_IC1_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_IC1,p_i_IC1);
+end
+
+% IC2
+% Need to FIX IC2 CT analysis (!!)
+% load SA_IC2.mat CT_IC2.mat;
+% [SA_IC2_i,CT_IC2_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_IC2,p_i_IC2);
+
+% IC3
+if isfile('Matfiles/SA_CT_interpolated.mat')
+   load('Matfiles/SA_CT_interpolated.mat','SA_IC3_i','CT_IC3_i','SAmid_IC3_i','CTmid_IC3_i');
+   disp('IC3: SA and CT already interpolated');
+else
+    disp('IC3: interpolating SA and CT...');
+    load Matfiles/SA_IC3.mat;
+    load Matfiles/CT_IC3.mat;
+    [SA_IC3_i,CT_IC3_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_IC3,p_i_IC3);
+    [SAmid_IC3_i,CTmid_IC3_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_IC3,pmid_IC3);
+end
+
+% IC4
+if isfile('Matfiles/SA_CT_interpolated.mat')
+    load('SA_CT_interpolated.mat','SA_IC4_i','CT_IC4_i');
+    disp('IC4: SA and CT already interpolated');
+else
+    disp('IC4: interpolating SA and CT...');
+    load Matfiles/SA_IC4.mat;
+    load Matfiles/CT_IC4.mat;
+    [SA_IC4_i,CT_IC4_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_IC4,p_i_IC4);
+end
+
+% M1
+if isfile('Matfiles/SA_CT_interpolated.mat')
+    load('Matfiles/SA_CT_interpolated.mat','SA_M1_i','CT_M1_i','SAmid_M1_i','CTmid_M1_i');
+    disp('M1: SA and CT already interpolated');
+else
+    disp('M1: interpolating SA and CT...');
+    load Matfiles/p_S.mat;
+    load Matfiles/SA_M1.mat;
+    load Matfiles/CT_M1.mat;
+    [SA_M1_i,CT_M1_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_M1,p_i_M1);
+    [SAmid_M1_i,CTmid_M1_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_M1,pmid_M1);
+end
+
+%% 
+% Save interpolated SA and CT: note that IC2 is missing
+
+save Matfiles/SA_CT_interpolated.mat SA_IC1_i SA_IC3_i SA_IC4_i SA_M1_i ...
+    CT_IC1_i CT_IC3_i CT_IC4_i CT_M1_i ...
+    SAmid_IC3_i CTmid_IC3_i;
+
+%%
+
+% load SA_IC1.mat;
+% load('depthsS.mat','depths_IC1');
+% 
+% figure
+% scatter(absoluteSalinity(:,1),-depths_IC1);
+% hold on
+% plot(SA_IC1_i(:,1),zqIC1);
+% hold off
+
+%% Stabilise -> deprecated, removing...
+
+% load N2-CT.mat;
+% CT_IC3 = CT_IC3';
+
+
+%% New Interpolation method
+
+% SA5 = SA_out()';
+% CT5 = CT_out()';
+
+% % new structure to copy the WOCE atlas framework used by Casimir
+% load('WOCE_climatology.mat');
+% % zq = -zax(1:27)';
+% 
+% % this is just for IC3
+% zq = [-zax(1:16)',-450:-50:-1663];
+% 
+% p_i = gsw_p_from_z(zq,latitude(4));
+% 
+% [SA_i3,CT_i3] = gsw_SA_CT_interp(SA_IC3,CT_IC3,p,p_i);
+% 
+% save N2-SAL SA_i3 -append;
+% save N2-CT CT_i3 -append;
+
+%% pchip method: extend interpolation to the bottom
+
+% This is needed to add values for the bottom of IC3, IC4, and M1, which
+% for some reason can't be completely interpolated with the GSW function.
+
+load Matfiles/depthsS.mat;
+load Matfiles/depthsT.mat;
+
+if isfile('Matfiles/pchipSACT.mat')
+    disp('pchip interp done for SA_IC3');
+    load('Matfiles/pchipSACT.mat','SA_IC3_i_pchip','SAmid_IC3_i_pchip');
+else
+    disp('Calculating pchip interp for SA_IC3...');
+    for i=1:length(time)
+        load Matfiles/SA_IC3.mat;
+        SA_IC3_i_pchip(i,:) = pchip(-depths_IC3,absoluteSalinity(:,i),zqIC3(:));
+        SAmid_IC3_i_pchip(i,:) = pchip(-depths_IC3,absoluteSalinity(:,i),zqIC3_mid(:));
+    end
+end
+
+if isfile('Matfiles/pchipSACT.mat')
+    disp('pchip interp done for SA_IC4');
+    load('Matfiles/pchipSACT.mat','SA_IC4_i_pchip');
+else
+    disp('Calculating pchip interp for SA_IC4...');
+    for i=1:length(time)
+        load Matfiles/SA_IC4.mat;
+        SA_IC4_i_pchip(i,:) = pchip(-depths_IC4,absoluteSalinity(:,i),zqIC4);
+        X = sprintf('%d SA-IC4',i);
+        disp(X);
+    end
+end
+
+if isfile('Matfiles/pchipSACT.mat')
+    disp('pchip interp done for SA_M1');
+    load('Matfiles/pchipSACT.mat','SA_M1_i_pchip','SAmid_M1_i_pchip');
+else
+    disp('Calculating pchip interp for SA_M1...')
+    for i=1:length(time)
+        load Matfiles/SA_M1.mat;
+        SA_M1_i_pchip(i,:) = pchip(-depths_M1,absoluteSalinity(:,i),zqM1);
+        SAmid_M1_i_pchip(i,:) = pchip(-depths_M1,absoluteSalinity(:,i),zqM1_mid(:));
+        X = sprintf('%d SA-M1',i);
+        disp(X);
+    end
+end
+ 
+if isfile('Matfiles/pchipSACT.mat')
+    disp('pchip interp done for CT_IC3');
+    load('Matfiles/pchipSACT.mat','CT_IC3_i_pchip','CT_IC3mid_i_pchip');
+else
+    for i=1:length(time)
+        load Matfiles/CT_IC3.mat;
+        CT_IC3_i_pchip(i,:) = pchip(-depths_IC3,conservativeTemperature(:,i),zqIC3);
+        CT_IC3mid_i_pchip(i,:) = pchip(-depths_IC3,conservativeTemperature(:,i),zqIC3_mid);
+        X = sprintf('%d CT-IC3',i);
+        disp(X);
+    end
+end
+
+if isfile('Matfiles/pchipSACT.mat')
+    disp('pchip interp done for CT_IC4');
+    load('Matfiles/pchipSACT.mat','CT_IC4_i_pchip');
+else
+    for i=1:length(time)
+        load Matfiles/CT_IC4.mat;
+        CT_IC4_i_pchip(i,:) = pchip(-depths_IC4,conservativeTemperature(:,i),zqIC4);
+        X = sprintf('%d CT-IC4',i);
+        disp(X);
+    end
+end
+
+if isfile('Matfiles/pchipSACT.mat')
+    disp('pchip interp done for CT_M1');
+    load('Matfiles/pchipSACT.mat','CT_M1_i_pchip','CTmid_M1_i_pchip');
+else
+    for i=1:length(time)
+        load Matfiles/CT_M1.mat;
+        CT_M1_i_pchip(i,:) = pchip(-depths_M1,conservativeTemperature(:,i),zqM1);
+        CTmid_M1_i_pchip(i,:) = pchip(-depths_M1,conservativeTemperature(:,i),zqM1_mid);
+        X = sprintf('%d CT-M1',i);
+        disp(X);
+    end
+end
+
+% Intermediate save: these take a while to compute so - just in case!
+save Matfiles/pchipSACT SA_IC3_i_pchip SA_IC4_i_pchip SA_M1_i_pchip ...
+    CT_IC3_i_pchip CT_IC4_i_pchip CT_M1_i_pchip ...
+    SAmid_IC3_i_pchip SAmid_M1_i_pchip CT_IC3mid_i_pchip CTmid_M1_i_pchip;
+
+%% loady time
+load pchipSACT;
+
+%% Combine interpolations to create full-depth interpolation
+
+% ADD data from pchip interpolation to array set up during gsw
+% interpolation <=> don't create another new array
+
+SA_IC3_i = cat(1,SA_IC3_i(1:39,:),SA_IC3_i_pchip(:,40:42)');
+CT_IC3_i = cat(1,CT_IC3_i(1:39,:),CT_IC3_i_pchip(:,40:42)');
+
+SAmid_IC3_i = cat(1,SAmid_IC3_i(1:38,:),SAmid_IC3_i_pchip(:,39:41)');
+CTmid_IC3_i = cat(1,CTmid_IC3_i(1:38,:),CT_IC3mid_i_pchip(:,39:41)');
+
+SA_IC4_i = cat(1,SA_IC4_i(1:35,:),SA_IC4_i_pchip(:,36:38)');
+CT_IC4_i = cat(1,CT_IC4_i(1:35,:),CT_IC4_i_pchip(:,36:38)');
+
+SA_M1_i = cat(1,SA_M1_i(1:41,:),SA_M1_i_pchip(:,42:43)');
+CT_M1_i = cat(1,CT_M1_i(1:41,:),CT_M1_i_pchip(:,42:43)');
+
+SAmid_M1_i = cat(1,SAmid_M1_i(1:40,:),SAmid_M1_i_pchip(:,41:42)');
+CTmid_M1_i = cat(1,CTmid_M1_i(1:40,:),CTmid_M1_i_pchip(:,41:42)');
+
+% OVERWRITE previously-saved file containing only GSW-interpolated SA and
+% CT values
+save Matfiles/SA_CT_interpolated.mat CT_IC1_i CT_IC3_i CT_IC4_i CT_M1_i ...
+    SA_IC1_i SA_IC3_i SA_IC4_i SA_M1_i ...
+    SAmid_IC3_i CTmid_IC3_i ...
+    SAmid_M1_i CTmid_M1_i;
+
+%% Test the above to verify that the interpolations have been combined properly
+
+% figure
+% plot(SA_M1_i_test(:,1),zqM1,'DisplayName','summed int');
+% hold on
+% plot(SA_M1_i(:,1),zqM1,'DisplayName','gsw int');
+% plot(SA_M1_i_pchip(1,:),zqM1,'DisplayName','pchip int');
+% hold off
+% legend();
+% % SA_fullInterp = cat(1,SA_i3(1:39,:),SA_i(:,40:41)');
+% % CT_fullInterp = cat(1,CT_i3(1:39,:),CT_i(:,40:41)');
+
+
+%% Stabilise the interpolated values
+
+% Load interpolated SA and CT
+load Matfiles/SA_CT_interpolated.mat;
+% naming convention = [tracer]_[mooring]_[i=interpolated][s=stabilised]
+
+%% Stabilise IC1
+if isfile('Matfiles/SA_CT_stabilised.mat')
+    load('Matfiles/SA_CT_stabilised.mat','SA_IC1_is','CT_IC1_is');
+else
+    disp('IC1: Stabilising SA and CT...');
+    [SA_IC1_is,CT_IC1_is] = massStabilisation(SA_IC1_i,CT_IC1_i,p_i_IC1,time);
+    save Matfiles/SA_CT_stabilised.mat SA_IC1_is CT_IC1_is;
+end
+
+%% Stabilise IC3
+if isfile('Matfiles/SA_CT_stabilised.mat')
+    load('Matfiles/SA_CT_stabilised.mat','SA_IC3_is','CT_IC3_is');
+else
+    disp('IC3: Stabilising SA and CT...');
+    [SA_IC3_is,CT_IC3_is] = massStabilisation(SA_IC3_i,CT_IC3_i,p_i_IC3,time);
+    save Matfiles/SA_CT_stabilised.mat SA_IC3_is CT_IC3_is -append;
+end
+
+%% Stabilise IC4
+if isfile('Matfiles/SA_CT_stabilised.mat')
+    load('Matfiles/SA_CT_stabilised.mat','SA_IC4_is','CT_IC4_is');
+else
+    disp('IC4: Stabilising SA and CT...');
+    [SA_IC4_is,CT_IC4_is] = massStabilisation(SA_IC4_i,CT_IC4_i,p_i_IC4,time);
+    save Matfiles/SA_CT_stabilised.mat SA_IC4_is CT_IC4_is -append;
+end
+
+%% Stabilise M1
+% This if/else condition does not work properly. Must update.
+if isfile('Matfiles/SA_CT_stabilised.mat')
+    load('Matfiles/SA_CT_stabilised.mat','SA_M1_is','CT_M1_is');
+else
+    disp('M1: Stabilising SA and CT...');
+    [SA_M1_is,CT_M1_is] = massStabilisation(SA_M1_i,CT_M1_i,p_i_M1,time);
+    save Matfiles/SA_CT_stabilised.mat SA_M1_is CT_M1_is -append;
+end
+
+%% Compare stabilised vs non-stabilised SA and CT
+
+limA = 51500;
+limB = 52500;
+
+axA = figure;
+plot(SA_M1_i(:,limA:limB),zqM1,'Color','blue','DisplayName','not stabilised');
+hold on
+plot(SA_M1_is(:,limA:limB)',zqM1,':','Color','magenta','DisplayName','stabilised');
+hold off
+title('S_A: stabilisation');
+
+%% Find N2 with now-stabilised SA and CT
+
+if isfile('Matfiles/N_is.mat')
+    disp('Already calculated N_is: loading file');
+    load('Matfiles/N_is.mat')
+else
+    load("SA_CT_stabilised.mat");
+    disp('Calculating N_is');
+    [N2_IC1,pmid_IC1,zmid_IC1] = massBuoyancy(SA_IC1_is,CT_IC1_is,p_i_IC1,time,latitude(2));
+    % Come back to IC2 when it's fixed
+    % [N2_IC2,pmid_IC2] = massBuoyancy(SA_IC2_is,CT_IC2_is,p_i_IC2,time);
+    [N2_IC3,pmid_IC3,zmid_IC3] = massBuoyancy(SA_IC3_is,CT_IC3_is,p_i_IC3,time,latitude(4));
+    [N2_IC4,pmid_IC4,zmid_IC4] = massBuoyancy(SA_IC4_is,CT_IC4_is,p_i_IC4,time,latitude(5));
+    [N2_M1,pmid_M1,zmid_M1] = massBuoyancy(SA_M1_is,CT_M1_is,p_i_M1,time,latitude(6));
+    
+    N_IC1 = sqrt(N2_IC1);
+    % N_IC2 = sqrt(N2_IC2);
+    N_IC3 = sqrt(N2_IC3);
+    N_IC4 = sqrt(N2_IC4);
+    N_M1 = sqrt(N2_M1);
+    
+    save Matfiles/N_is.mat N2_IC1 N2_IC3 N2_IC4 N2_M1 ...
+        N_IC1 N_IC3 N_IC4 N_M1 ...
+        pmid_IC1 pmid_IC3 pmid_IC4 pmid_M1 ...
+        zmid_IC1 zmid_IC3 zmid_IC4 zmid_M1;
+end
+
+%% Check N2
+
+timeA = 1;
+timeB = 2000;
+
+figure
+scatter(N_IC1(:,timeA:timeB),zmid_IC1(:,timeA:timeB),25,[0.7 0.7 0.7]);    
+hold on
+scatter(N_IC1(56:58,timeA:timeB),zmid_IC1(56:58,timeA:timeB),'red');
+hold off
+xlabel('N [s^{-1}]');
+ylabel('depth [m]');
+title(['buoyancy frequency over time: steps ' num2str(timeA), ' - ', num2str(timeB)]);
+
+%% Save the bottom N2
+
+% Let the bottom frequency be initially defined as matching up to the
+% average bottom scale H_bot = 150m. We will do sensitivity analysis on
+% this quantity later.
+
+N2_bot_IC1 = mean(N2_IC1(56:58,:));
+% N2_bot_IC2 = mean(N2_IC2(end-3:end,:));
+
+% Update this to clear 150m bound: choosing 38 gives 165db separation
+% UPDATE LATER --> IT SHOULD BE 37:41 ==> 182m range (currently 132m)
+% (approx 163m)
+N2_bot_IC3 = mean(N2_IC3(38:41,:));
+N2_bot_IC4 = mean(N2_IC4(35:37,:));
+
+% Update to clear 180m bound: choosing 39 gives 188db sep (approx 186m)
+% UPDATE LATER: SHOULD BE 38:42 ==> 193m range (currently 143m)
+N2_bot_M1 = mean(N2_M1(39:42,:));
+
+N_bot_IC1 = sqrt(N2_bot_IC1);
+% N_bot_IC2 = sqrt(N2_bot_IC2);
+N_bot_IC3 = sqrt(N2_bot_IC3);
+N_bot_IC4 = sqrt(N2_bot_IC4);
+N_bot_M1 = sqrt(N2_bot_M1);
+
+save Matfiles/N_is.mat N2_bot_IC1 N2_bot_IC3 N2_bot_IC4 N2_bot_M1 ...
+    N_bot_IC1 N_bot_IC3 N_bot_IC4 N_bot_M1 -append;
+
+%% Plot Bottom Buoyancy
+
+load Matfiles/N_is.mat;
+
+ax1 = figure;
+subplot(2,1,1)
+plot(time,movmean(N_bot_IC3,149),'DisplayName','N_{bot,IC3} (6DM)');
+ylabel('N_{bot} [s^{-1}]');
+legend('Location','best');
+subplot(2,1,2)
+plot(time,movmean(N_bot_M1,149),'DisplayName','N_{bot,M1} (6DM)');
+ylabel('N_{bot} [s^{-1}]');
+legend('Location','best');
+exportgraphics(ax1,'figures/main/extract/_Nbot.png');
+
+%% Plot Buoyancy for IC3 and M1
+% It's in the param_Fzt file!
