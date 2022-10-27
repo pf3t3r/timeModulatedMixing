@@ -4,7 +4,7 @@ addpath(genpath(pwd));
 clear; close all; clc;
 set(groot,'defaultAxesXGrid','on');
 set(groot,'defaultAxesYGrid','on');
-set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 20]);
+set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 15]);
 
 load('Data/merged_hourly_unfiltered_data_20142020.mat','lat');
 load Matfiles/M1.mat;
@@ -188,6 +188,8 @@ for i=1:length(time)
     end
 end
 
+save Matfiles/IC3.mat U -append;
+save Matfiles/M1.mat U_M1 -append;
 
 %% M1
 
@@ -208,7 +210,7 @@ ylabel('U [cm s^{-1}]');
 
 exportgraphics(ax1,'figures/main/param/M1_barotropicTide.png');
 
-save Matfiles/M1.mat U_M1 U_M1_smooth -append;
+save Matfiles/M1.mat U_M1_smooth -append;
 
 %% IC3 
 % gotta create it for IC3 at the same time!
@@ -228,7 +230,7 @@ ylabel('U [cm s^{-1}]');
 legend('Location','best');
 exportgraphics(ax2,'figures/main/param/IC3_barotropicTide.png');
 
-save Matfiles/IC3.mat U U_IC3_smooth -append;
+save Matfiles/IC3.mat U_IC3_smooth -append;
 
 %% FFT for U
 

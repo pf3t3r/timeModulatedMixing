@@ -2,6 +2,8 @@ clear; close all; clc;
 set(groot,'defaultAxesXGrid','on');
 set(groot,'defaultAxesYGrid','on');
 set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 20]);
+% Add subfolders to path
+addpath(genpath(pwd));
 
 %% Load Irminger Current Mooring Data
 input = load('Data/merged_hourly_unfiltered_data_20142020.mat');

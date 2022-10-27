@@ -1,7 +1,7 @@
 clc; clear; close all;
 set(groot,'defaultAxesXGrid','on');
 set(groot,'defaultAxesYGrid','on');
-set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 2 40 22]);
+set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 2 40 15]);
 set(0,'defaultAxesFontSize',18);
 
 % Add subfolders to path
@@ -288,43 +288,35 @@ ax3 = figure;
 subplot(3,2,1)
 plot(time,Ehil6dm_IC3,'DisplayName','<E_{hil}(t)> (6dm)','LineWidth',1.5);
 legend('Location','northeast','FontSize',10);
-% xlabel('time');
 ylabel('E_{hil} [W m^{-2}]');
 % title('<E_{hil}(t)> (6-day mean)');
 
 subplot(3,2,3)
 plot(time,E_hil_IC3_Nbot2_6dm,'DisplayName','<N_{bot}^2(t)> (6dm)','Color','black','LineWidth',1.5);
 legend('Location','northeast','FontSize',10);
-% xlabel('time');
 ylabel('E_{hil} [W m^{-2}]');
 % title('<N_{bot}^2(t)> (6-day mean)');
 
 subplot(3,2,5)
 plot(time,E_hil_IC3_U_6dm,'DisplayName','<U(t)> (6dm)','Color','green','LineWidth',1.5);
 legend('Location','northeast','FontSize',10);
-% xlabel('time');
 ylabel('E_{hil} [W m^{-2}]');
 % title('<U(t)> (6-day mean)');
 
 subplot(3,2,2)
 plot(time(t1:t2),Ehil6dm_IC3(t1:t2),'DisplayName','<E_{hil}(t)> (6dm)','LineWidth',1.5);
 legend('Location','northeast','FontSize',10);
-% xlabel('time');
-% ylabel('E_{hil} [W m^{-2}]');
+
 % title('<E_{hil}(t)> (6-day mean): close-up');
 
 subplot(3,2,4)
 plot(time(t1:t2),E_hil_IC3_Nbot2_6dm(t1:t2),'DisplayName','<N_{bot}^2(t)> (6dm)','Color','black','LineWidth',1.5);
 legend('Location','northeast','FontSize',10);
-% xlabel('time');
-% ylabel('E_{hil} [W m^{-2}]');
 % title('<N_{bot}^2(t)> (6-day mean): close-up');
 
 subplot(3,2,6)
 plot(time(t1:t2),E_hil_IC3_U_6dm(t1:t2),'DisplayName','<U(t)> (6dm)','Color','green','LineWidth',1.5);
 legend('Location','northeast','FontSize',10);
-% xlabel('time');
-% ylabel('E_{hil} [W m^{-2}]');
 % title('<U(t)> (6-day mean): close-up');
 
 % sgtitle('IC3: Influence of N^2 and U on E_{hil}');
@@ -370,32 +362,29 @@ legend();
 ylabel({'Energy Available for';' Mixing E_{hil} [Wm^{-2}]'});
 exportgraphics(ax3aa,'figures/main/param/' + mooring(1) + '_EHil_drivers.png');
 
-%% AS ABOVE but only ZOOM
+%% IC3 comp influence of Nbot2 and U: zoom
 
-set(0,'defaultAxesFontSize',12);
-set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 2 28 22]);
+set(0,'defaultAxesFontSize',15);
+
 ax3b = figure;
-
-subplot(3,1,1)
-plot(time(t1:t2),Ehil6dm_IC3(t1:t2),'DisplayName','<E_{hil}(t)> (6dm)','LineWidth',1.5);
+set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 2 40 15]);
+ax3b = figure;
+subplot(2,1,1)
+yyaxis left
+plot(time(t1:t2),Ehil6dm_IC3(t1:t2),'DisplayName','<E_{hil}(t)> (6DM)','LineWidth',1.5);
+ylabel('<E_{hil}(t)> [W m^{-2}]');
+hold on
+yyaxis right
+plot(time(t1:t2),movmean(N2_bot_IC3(t1:t2),149),'DisplayName','N_{bot}^2(t) (6DM)','LineWidth',1.5);
+% plot(time(t1:t2),E_hil_IC3_Nbot2_6dm(t1:t2),'DisplayName','<N_{bot}^2(t)> (6DM)','Color','black','LineWidth',1.5);
+ylabel('N_{bot}^2 [s^{-2}]');
+hold off
 legend();
-xlabel('time');
-ylabel('E_{hil} [W m^{-2}]');
-title('<E_{hil}(t)> (6-day mean): close-up');
-
-subplot(3,1,2)
-plot(time(t1:t2),E_hil_IC3_Nbot2_6dm(t1:t2),'DisplayName','<N_{bot}^2(t)> (6dm)','Color','black','LineWidth',1.5);
+subplot(2,1,2)
+plot(time(t1:t2),movmean(U_IC3(t1:t2),149),'DisplayName','U(t) (6DM)','LineWidth',1.5);
+% plot(time(t1:t2),E_hil_IC3_U_6dm(t1:t2),'DisplayName','<U(t)> (6DM)','LineWidth',1.5);
+ylabel('U [m s^{-1}]');
 legend();
-xlabel('time');
-ylabel('E_{hil} [W m^{-2}]');
-title('<N_{bot}^2(t)> (6-day mean): close-up');
-
-subplot(3,1,3)
-plot(time(t1:t2),E_hil_IC3_U_6dm(t1:t2),'DisplayName','<U(t)> (6dm)','Color','green','LineWidth',1.5);
-legend();
-xlabel('time');
-ylabel('E_{hil} [W m^{-2}]');
-title('<U(t)> (6-day mean): close-up');
 
 exportgraphics(ax3b,'figures/main/param/' + mooring(1) + '_EHil_Zoom.png');
 
@@ -454,27 +443,24 @@ exportgraphics(ax4,'figures/main/param/' + mooring(2) + '_EHil-subplots.png');
 %% same as above but without zoom
 
 %% M1: E_hil(t), comparative influence of N_bot^2 and U
-set(0,'defaultAxesFontSize',16);
+set(0,'defaultAxesFontSize',14);
 
 ax4a = figure;
 subplot(3,1,1)
 plot(time,Ehil6dm_M1,'DisplayName','<E_{hil}(t)> (6DM)','LineWidth',1.5);
 legend();
-% xlabel('time');
 ylabel({'Energy Available for';' Mixing E_{hil} [Wm^{-2}]'});
 % title('<E_{hil}(t)>');
 
 subplot(3,1,2)
 plot(time,E_hil_M1_Nbot2_6dm,'DisplayName','<N_{bot}^2(t)> (6DM)','Color','black','LineWidth',1.5);
 legend();
-% xlabel('time');
 ylabel({'Energy Available for';' Mixing E_{hil} [Wm^{-2}]'});
 % title('<N_{bot}^2(t)>');
 
 subplot(3,1,3)
 plot(time,E_hil_M1_U_6dm,'DisplayName','<U(t)> (6DM)','Color','green','LineWidth',1.5);
 legend();
-% xlabel('time');
 ylabel({'Energy Available for';' Mixing E_{hil} [Wm^{-2}]'});
 % title('<U(t)>');
 
@@ -485,30 +471,26 @@ exportgraphics(ax4a,'figures/main/param/' + mooring(2) + '_EHil-subplotsNoZoom.p
 
 %% M1 Ehil: only ZOOM
 
-set(0,'defaultAxesFontSize',12);
-set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 2 28 22]);
+set(0,'defaultAxesFontSize',15);
 
+set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 2 40 15]);
 ax4b = figure;
-subplot(3,1,1)
-plot(time(t1:t2),Ehil6dm_M1(t1:t2),'DisplayName','<E_{hil}(t)> (6dm)','LineWidth',1.5);
+subplot(2,1,1)
+yyaxis left
+plot(time(t1:t2),Ehil6dm_M1(t1:t2),'DisplayName','<E_{hil}(t)> (6DM)','LineWidth',1.5);
+ylabel('<E_{hil}(t)> [W m^{-2}]');
+hold on
+yyaxis right
+plot(time(t1:t2),movmean(N2_bot_M1(t1:t2),149),'DisplayName','N_{bot}^2(t) (6DM)','LineWidth',1.5);
+% plot(time(t1:t2),E_hil_M1_Nbot2_6dm(t1:t2),'DisplayName','<N_{bot}^2(t)> (6DM)','Color','black','LineWidth',1.5);
+ylabel('N_{bot}^2 [s^{-2}]');
+hold off
 legend();
-xlabel('time');
-ylabel('E_{hil} [W m^{-2}]');
-title('<E_{hil}(t)> (6-day mean): close-up');
-
-subplot(3,1,2)
-plot(time(t1:t2),E_hil_M1_Nbot2_6dm(t1:t2),'DisplayName','<N_{bot}^2(t)> (6dm)','Color','black','LineWidth',1.5);
+subplot(2,1,2)
+plot(time(t1:t2),movmean(U_M1(t1:t2),149),'DisplayName','U(t) (6DM)','LineWidth',1.5);
+% plot(time(t1:t2),E_hil_M1_U_6dm(t1:t2),'DisplayName','<U(t)> (6DM)','LineWidth',1.5);
+ylabel('U [m s^{-1}]');
 legend();
-xlabel('time');
-ylabel('E_{hil} [W m^{-2}]');
-title('<N_{bot}^2(t)> (6-day mean): close-up');
-
-subplot(3,1,3)
-plot(time(t1:t2),E_hil_M1_U_6dm(t1:t2),'DisplayName','<U(t)> (6dm)','Color','green','LineWidth',1.5);
-legend();
-xlabel('time');
-ylabel('E_{hil} [W m^{-2}]');
-title('<U(t)> (6-day mean): close-up');
 
 exportgraphics(ax4b,'figures/main/param/' + mooring(2) + '_EHil_Zoom.png');
 
@@ -517,7 +499,7 @@ clear time1 time2;
 
 %% Update fontsize again: back to big letters
 set(0,'defaultAxesFontSize',20);
-set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 2 40 22]);
+set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 2 40 15]);
 
 %% IC3: Histogram. Distribution of E_hil.
 
@@ -583,94 +565,6 @@ exportgraphics(ax6a,'figures/main/param/' + mooring(2) + '_log10EHil-histogram.p
 % Hourly (original data)
 [corr_E_N_IC3_hrly,pvalEN_IC3_hrly] = corr(E_hil_IC3_Nbot2,Ehil_IC3);
 [corr_E_U_IC3_hrly,pvalEU_IC3_hrly] = corr(E_hil_IC3_U,Ehil_IC3);
-% 
-% % 3 hours
-% [rhoN3h,pvalN3h] = corr(movmean(E_hil_IC3_mod,3),movmean(E_hil_IC3_Nbot2,3));
-% [rhoU3h,pvalU3h] = corr(movmean(E_hil_IC3_U,3),movmean(E_hil_IC3_mod,3));
-% 
-% % 6 hours
-% [rhoN6h,pvalN6h] = corr(movmean(E_hil_IC3_mod,6),movmean(E_hil_IC3_Nbot2,6));
-% [rhoU6h,pvalU6h] = corr(movmean(E_hil_IC3_U,6),movmean(E_hil_IC3_mod,6));
-% 
-% % Semidiurnal
-% [rhoNsd,pvalNsd] = corr(movmean(E_hil_IC3_mod,12.42),movmean(E_hil_IC3_Nbot2,12.42));
-% [rhoUsd,pvalUsd] = corr(movmean(E_hil_IC3_U,12.42),movmean(E_hil_IC3_mod,12.42));
-% 
-% % Daily
-% [rhoN1d,pvalN1d] = corr(movmean(E_hil_IC3_mod,24),movmean(E_hil_IC3_Nbot2,24));
-% [rhoU1d,pvalU1d] = corr(movmean(E_hil_IC3_U,24),movmean(E_hil_IC3_mod,24));
-% 
-% % Monthly
-% [rhoNm,pvalNm] = corr(movmean(E_hil_IC3_mod,24*30),movmean(E_hil_IC3_Nbot2,24*30));
-% [rhoUm,pvalUm] = corr(movmean(E_hil_IC3_U,24*30),movmean(E_hil_IC3_mod,24*30));
-% 
-% % Multi-month (5-month)
-% [rhoN5m,pvalN5m] = corr(movmean(E_hil_IC3_mod,5*24*30),movmean(E_hil_IC3_Nbot2,5*24*30));
-% [rhoU5m,pvalU5m] = corr(movmean(E_hil_IC3_U,5*24*30),movmean(E_hil_IC3_mod,5*24*30));
-% 
-% % One Year
-% [rhoN1y,pvalN1y] = corr(movmean(E_hil_IC3_mod,24*365),movmean(E_hil_IC3_Nbot2,24*365));
-% [rhoU1y,pvalU1y] = corr(movmean(E_hil_IC3_U,24*365),movmean(E_hil_IC3_mod,24*365));
-% 
-% %% V2. Fourier Analysis of E.
-% 
-% Ts = 3600;
-% fs = 2*pi/Ts;
-% L = length(time);
-% 
-% test = fft(E_hil_IC3_mod_6dm);
-% testU = fft(E_hil_IC3_U_6dm);
-% testN = fft(E_hil_IC3_Nbot2_6dm);
-% P2 = abs(test/L);
-% P2u = abs(testU/L);
-% P2n = abs(testN/L);
-% P1 = P2(1:floor(L/2));
-% P1u = P2u(1:floor(L/2));
-% P1n = P2n(1:floor(L/2));
-% f = (0:L/2-1)*fs/L;
-% 
-% [freqs,names] = frequencies_PF;
-% Omega = 7.2921e-5;
-% 
-% f_M2 = freqs(45)/(24*3600);
-% f_M4 = freqs(76)/(24*3600);
-% f_S1 = freqs(20)/(24*3600);
-% f_S3 = freqs(67)/(24*3600);
-% fC = 2*Omega*sin(deg2rad(lat(4)));
-% 
-% ax6 = figure;
-% % subplot(3,1,1)
-% % semilogy(f,P1,'DisplayName','<E_{hil}(t)>');
-% % hold on
-% semilogy(f,P1u,'--','DisplayName','U comp of E','LineWidth',1);
-% % semilogy(f,P1n,':','DisplayName','N2 comp of E','LineWidth',1.5);
-% hold on
-% xline(f_M2,':',names(45),'DisplayName','M2');
-% xline(f_M4,':',names(76),'DisplayName','M4');
-% xline(fC,':','f','DisplayName','f');
-% xline(f_S1,':',names(20),'DisplayName','S1');
-% xline(f_S3,':',names(67),'DisplayName','S3');
-% hold off
-% legend();
-% xlabel('frequency [s^{-1}]');
-% ylabel('|<E_{hil}(t)>|^{2} [W^2 m^{-4}]');
-% title('DFT: U component of E');
-% 
-% savefig('figures/main/param/' + mooring + '_EHil-fft-U');
-% exportgraphics(ax6,'figures/main/param/' + mooring + '_EHil-fft-U.png');
-% 
-% 
-% %%
-% windowSizes = 6:143:42906;
-% for k = 1 : length(windowSizes)
-%   smoothedSignal = movmean(E_hil_IC3_mod, windowSizes(k));
-%   sad(k) = sum(abs(smoothedSignal - E_hil_IC3_mod));
-% end
-% 
-% figure
-% plot(windowSizes, sad, 'b*-', 'LineWidth', 2);
-% xlabel('Window Size');
-% ylabel('SAD');
 
 %% M1: Correlation of <E_hil(t)> with <U(t)> and <N^2_bot(t)>
 
@@ -684,5 +578,3 @@ exportgraphics(ax6a,'figures/main/param/' + mooring(2) + '_log10EHil-histogram.p
 %% Save parameters for the next file
 
 save Matfiles/E_hil.mat Ehil_IC3 Ehil_M1 Ehil6dm_IC3 Ehil6dm_M1;
-
-% E_hil_IC3_mod_6dm rho zq bathy N2_int_3D_overTime dz_IC3;

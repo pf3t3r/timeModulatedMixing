@@ -1,7 +1,7 @@
 clc; clear; close all;
 set(groot,'defaultAxesXGrid','on');
 set(groot,'defaultAxesYGrid','on');
-set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 22]);
+set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 15]);
 set(0,'defaultAxesFontSize',18);
 
 % Add subfolders to path
@@ -24,50 +24,50 @@ Rf = 1/6;
 D_wwi = Rf.*sixDayEpsWwiM./N2_IC3;
 
 % Histogram of diffusivity
-ax1 = figure;
-histogram(D_wwi);
-title('Diffusivity (before binning)');
-
-savefig('figures/main/param/' + mooring + '_D_hist');
-exportgraphics(ax1,'figures/main/param/' + mooring + '_D_hist.png');
+% ax1 = figure;
+% histogram(D_wwi);
+% title('Diffusivity (before binning)');
+% 
+% savefig('figures/main/param/' + mooring + '_D_hist');
+% exportgraphics(ax1,'figures/main/param/' + mooring + '_D_hist.png');
 
 save Matfiles/D_wwi.mat D_wwi;
 
 %% Diffusivity: binning optimisation
 
-% New optimisation: put values <1e-5 and values >1e-2 in one bin
-% respectively
-edges = [0 1e-5 3e-5 5e-5 0.7e-4 1e-4 1.4e-4 2e-4 3.5e-4 6e-4 1e-3 2e-3 4e-3 1e-2 7];
-
-binnedDiffusivity = discretize(D_wwi,edges);
-
-ax2 = figure;
-histogram(binnedDiffusivity);
-title('Diffusivity (after binning)');
-
-savefig('figures/main/param/' + mooring + '_D_histBinned');
-exportgraphics(ax2,'figures/main/param/' + mooring + '_D_histBinned.png');
+% % New optimisation: put values <1e-5 and values >1e-2 in one bin
+% % respectively
+% edges = [0 1e-5 3e-5 5e-5 0.7e-4 1e-4 1.4e-4 2e-4 3.5e-4 6e-4 1e-3 2e-3 4e-3 1e-2 7];
+% 
+% binnedDiffusivity = discretize(D_wwi,edges);
+% 
+% ax2 = figure;
+% histogram(binnedDiffusivity);
+% title('Diffusivity (after binning)');
+% 
+% savefig('figures/main/param/' + mooring + '_D_histBinned');
+% exportgraphics(ax2,'figures/main/param/' + mooring + '_D_histBinned.png');
 
 %% Diffusivity: binned plot
 
-NCbar = length(edges)-1;
-
-ax3 = figure;
-contourf(X2,Y2,binnedDiffusivity,'LineColor','none');
-datetick('x','yyyy mmm','keeplimits');
-c = colorbar;
-colormap(flipud(cbrewer2('Spectral',NCbar)));
-c.Label.String = '\epsilon_{hil} [W kg^{-1}]';
-c = colorbar('YTick',1:15,'TickLabels',{num2str(edges(1)), num2str(edges(2)), num2str(edges(3)), num2str(edges(4)), ... 
-    num2str(edges(5)), num2str(edges(6)), num2str(edges(7)), num2str(edges(8)), num2str(edges(9)), ...
-    num2str(edges(10)), num2str(edges(11)), num2str(edges(12)), num2str(edges(13)), num2str(edges(14)), num2str(edges(15))});
-xlabel('time');
-ylabel('depth [m]');
-zlabel('\epsilon_{hil}');
-title('binned diffusivity');
-
-savefig('figures/main/param/' + mooring + '_diffusivityBinned');
-exportgraphics(ax3,'figures/main/param/' + mooring + '_diffusivityBinned.png');
+% NCbar = length(edges)-1;
+% 
+% ax3 = figure;
+% contourf(X2,Y2,binnedDiffusivity,'LineColor','none');
+% datetick('x','yyyy mmm','keeplimits');
+% c = colorbar;
+% colormap(flipud(cbrewer2('Spectral',NCbar)));
+% c.Label.String = '\epsilon_{hil} [W kg^{-1}]';
+% c = colorbar('YTick',1:15,'TickLabels',{num2str(edges(1)), num2str(edges(2)), num2str(edges(3)), num2str(edges(4)), ... 
+%     num2str(edges(5)), num2str(edges(6)), num2str(edges(7)), num2str(edges(8)), num2str(edges(9)), ...
+%     num2str(edges(10)), num2str(edges(11)), num2str(edges(12)), num2str(edges(13)), num2str(edges(14)), num2str(edges(15))});
+% xlabel('time');
+% ylabel('depth [m]');
+% zlabel('\epsilon_{hil}');
+% title('binned diffusivity');
+% 
+% savefig('figures/main/param/' + mooring + '_diffusivityBinned');
+% exportgraphics(ax3,'figures/main/param/' + mooring + '_diffusivityBinned.png');
 
 
 %% Diffusivity: IC3 (not binned)
@@ -86,45 +86,45 @@ exportgraphics(ax3a,'figures/main/param/' + mooring + '_D_Wwi.png');
 
 %% Zoomed-in contour plot
 
-depthToPlotFrom = 33;
-t1 = 9000;
-t2 = 10000;
-t3 = 30000;
-t4 = 31000;
-
-ax3a = figure;
-sgtitle('Diffusivity: zoomed-in');
-
-subplot(1,2,1)
-contourf(X2(depthToPlotFrom:end,t1:t2),Y2(depthToPlotFrom:end,t1:t2),binnedDiffusivity(depthToPlotFrom:end,t1:t2),'LineColor','none');
-datetick('x','yyyy mmm','keeplimits');
-c = colorbar;
-colormap(flipud(cbrewer2('Spectral',NCbar)));
-c.Label.String = '\epsilon_{hil} [W kg^{-1}]';
-c = colorbar('YTick',1:15,'TickLabels',{num2str(edges(1)), num2str(edges(2)), num2str(edges(3)), num2str(edges(4)), ... 
-    num2str(edges(5)), num2str(edges(6)), num2str(edges(7)), num2str(edges(8)), num2str(edges(9)), ...
-    num2str(edges(10)), num2str(edges(11)), num2str(edges(12)), num2str(edges(13)), num2str(edges(14)), num2str(edges(15))});
-xlabel('time');
-ylabel('depth [m]');
-zlabel('\epsilon_{hil}');
-
-subplot(1,2,2)
-contourf(X2(depthToPlotFrom:end,t3:t4),Y2(depthToPlotFrom:end,t3:t4),binnedDiffusivity(depthToPlotFrom:end,t3:t4),'LineColor','none');
-datetick('x','yyyy mmm','keeplimits');
-c = colorbar;
-colormap(flipud(cbrewer2('Spectral',NCbar)));
-c.Label.String = '\epsilon_{hil} [W kg^{-1}]';
-c = colorbar('YTick',1:15,'TickLabels',{num2str(edges(1)), num2str(edges(2)), num2str(edges(3)), num2str(edges(4)), ... 
-    num2str(edges(5)), num2str(edges(6)), num2str(edges(7)), num2str(edges(8)), num2str(edges(9)), ...
-    num2str(edges(10)), num2str(edges(11)), num2str(edges(12)), num2str(edges(13)), num2str(edges(14)), num2str(edges(15))});
-xlabel('time');
-ylabel('depth [m]');
-zlabel('\epsilon_{hil}');
-
-clear depthToPlotFrom t1 t2 t3 t4;
-
-% savefig('figures/main/param/' + mooring + '_diffusivityBinned_Zoom');
-exportgraphics(ax3a,'figures/main/param/' + mooring + '_diffusivityBinned_Zoom.png');
+% depthToPlotFrom = 33;
+% t1 = 9000;
+% t2 = 10000;
+% t3 = 30000;
+% t4 = 31000;
+% 
+% ax3a = figure;
+% sgtitle('Diffusivity: zoomed-in');
+% 
+% subplot(1,2,1)
+% contourf(X2(depthToPlotFrom:end,t1:t2),Y2(depthToPlotFrom:end,t1:t2),binnedDiffusivity(depthToPlotFrom:end,t1:t2),'LineColor','none');
+% datetick('x','yyyy mmm','keeplimits');
+% c = colorbar;
+% colormap(flipud(cbrewer2('Spectral',NCbar)));
+% c.Label.String = '\epsilon_{hil} [W kg^{-1}]';
+% c = colorbar('YTick',1:15,'TickLabels',{num2str(edges(1)), num2str(edges(2)), num2str(edges(3)), num2str(edges(4)), ... 
+%     num2str(edges(5)), num2str(edges(6)), num2str(edges(7)), num2str(edges(8)), num2str(edges(9)), ...
+%     num2str(edges(10)), num2str(edges(11)), num2str(edges(12)), num2str(edges(13)), num2str(edges(14)), num2str(edges(15))});
+% xlabel('time');
+% ylabel('depth [m]');
+% zlabel('\epsilon_{hil}');
+% 
+% subplot(1,2,2)
+% contourf(X2(depthToPlotFrom:end,t3:t4),Y2(depthToPlotFrom:end,t3:t4),binnedDiffusivity(depthToPlotFrom:end,t3:t4),'LineColor','none');
+% datetick('x','yyyy mmm','keeplimits');
+% c = colorbar;
+% colormap(flipud(cbrewer2('Spectral',NCbar)));
+% c.Label.String = '\epsilon_{hil} [W kg^{-1}]';
+% c = colorbar('YTick',1:15,'TickLabels',{num2str(edges(1)), num2str(edges(2)), num2str(edges(3)), num2str(edges(4)), ... 
+%     num2str(edges(5)), num2str(edges(6)), num2str(edges(7)), num2str(edges(8)), num2str(edges(9)), ...
+%     num2str(edges(10)), num2str(edges(11)), num2str(edges(12)), num2str(edges(13)), num2str(edges(14)), num2str(edges(15))});
+% xlabel('time');
+% ylabel('depth [m]');
+% zlabel('\epsilon_{hil}');
+% 
+% clear depthToPlotFrom t1 t2 t3 t4;
+% 
+% % savefig('figures/main/param/' + mooring + '_diffusivityBinned_Zoom');
+% exportgraphics(ax3a,'figures/main/param/' + mooring + '_diffusivityBinned_Zoom.png');
 
 %% Flux
 

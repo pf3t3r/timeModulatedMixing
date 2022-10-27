@@ -47,7 +47,7 @@ p_i_IC3 = gsw_p_from_z(zqIC3,latitude(4));
 p_i_IC4 = gsw_p_from_z(zqIC4,latitude(5));
 p_i_M1 = gsw_p_from_z(zqM1,latitude(6));
 
-% Load pmid shit
+% Load pmid
 load('Matfiles/IC3.mat','pmid_IC3');
 load('Matfiles/M1.mat','pmid_M1');
 
@@ -116,42 +116,6 @@ end
 save Matfiles/SA_CT_interpolated.mat SA_IC1_i SA_IC3_i SA_IC4_i SA_M1_i ...
     CT_IC1_i CT_IC3_i CT_IC4_i CT_M1_i ...
     SAmid_IC3_i CTmid_IC3_i;
-
-%%
-
-% load SA_IC1.mat;
-% load('depthsS.mat','depths_IC1');
-% 
-% figure
-% scatter(absoluteSalinity(:,1),-depths_IC1);
-% hold on
-% plot(SA_IC1_i(:,1),zqIC1);
-% hold off
-
-%% Stabilise -> deprecated, removing...
-
-% load N2-CT.mat;
-% CT_IC3 = CT_IC3';
-
-
-%% New Interpolation method
-
-% SA5 = SA_out()';
-% CT5 = CT_out()';
-
-% % new structure to copy the WOCE atlas framework used by Casimir
-% load('WOCE_climatology.mat');
-% % zq = -zax(1:27)';
-% 
-% % this is just for IC3
-% zq = [-zax(1:16)',-450:-50:-1663];
-% 
-% p_i = gsw_p_from_z(zq,latitude(4));
-% 
-% [SA_i3,CT_i3] = gsw_SA_CT_interp(SA_IC3,CT_IC3,p,p_i);
-% 
-% save N2-SAL SA_i3 -append;
-% save N2-CT CT_i3 -append;
 
 %% pchip method: extend interpolation to the bottom
 

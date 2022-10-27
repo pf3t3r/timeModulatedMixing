@@ -1,7 +1,7 @@
 clc; clear; close all;
 set(groot,'defaultAxesXGrid','on');
 set(groot,'defaultAxesYGrid','on');
-set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 22]);
+set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 15]);
 set(0,'defaultAxesFontSize',18);
 
 % Add subfolders to path
