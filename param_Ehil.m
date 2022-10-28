@@ -18,6 +18,11 @@ load('Data/merged_hourly_unfiltered_data_20142020.mat', 'lat');  % Mooring latit
 powerhilM1 = power_hil(660,279);
 powerhilIC3 = power_hil(657,279);
 
+% ALTERNATIVE CALCULATION
+hrms_IC3 = 146;
+hrms_M1 = 180;
+Ehil_alt_IC3 = mean(N2_bot_IC3)*mean(U)*hrms_IC3.^2;
+Ehil_alt_M1 = mean(N2_bot_M1)*mean(U_M1)*hrms_M1.^2;
 
 %% Some notes
 % Casimir's parametrisation contains the decay scales and depth-integrated
