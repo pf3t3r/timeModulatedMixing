@@ -3,7 +3,8 @@
 clear; close all; clc;
 set(groot,'defaultAxesXGrid','on');
 set(groot,'defaultAxesYGrid','on');
-set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 20]);
+set(groot, 'defaultFigureUnits', 'centimeters', 'defaultFigurePosition', [5 5 40 15]);
+set(0,'defaultAxesFontSize',18);
 
 % Add subfolders to path
 addpath(genpath(pwd));
@@ -101,7 +102,7 @@ end
 %% All time periods (every month)
 
 for i=1:72
-    [A0(i), Amps(i), Phases(i), Xmean(i), Fit(i), R2(i), resi(i)] = runLSHA(time_int((i-1)*Lm+1:i*Lm),wn,u(:,(i-1)*Lm+1:i*Lm),v(:,(i-1)*Lm+1:i*Lm),noOfMeters);
+    [~,~,~,~,Fit(i),~,resi(i)] = runLSHA(time_int((i-1)*Lm+1:i*Lm),wn,u(:,(i-1)*Lm+1:i*Lm),v(:,(i-1)*Lm+1:i*Lm),noOfMeters);
 end
 
 convertingFitStructToArray = cell2mat(struct2cell(Fit));
@@ -112,7 +113,7 @@ convertingResiStructToArray = cell2mat(struct2cell(resi));
 Resiu = convertingResiStructToArray(1:41,:,:);
 Resiv = convertingResiStructToArray(42:end,:,:);
 
-clear A0 Amps Phases Xmean Fit R2 resi;
+% clear A0 Amps Phases Xmean Fit R2 resi;
 
 %% FFT on 6-month windows
 
@@ -179,41 +180,48 @@ end
 periodsToPlot = 1:72;
 
 ax1 = figure;
-% plot(f,P1_resi_u_dptAvg,'Color',[0.7 0.7 0.7]);
-% hold on
-plot(f,mean(P1_resi_u_dptAvg));
+rectangle(Position=[0.85*fCor,0,0.35*fCor,7e-3], FaceColor=[0.9 0.9 0.9], EdgeColor=[0.9 0.9 0.9]);
 hold on
+grid on;  grid minor
+set(gca, "Layer", "top");
+% plot(f,P1_resi_u_dptAvg,'Color',[0.7 0.7 0.7]);
+plot(f,mean(P1_resi_u_dptAvg),'DisplayName','Residual Zonal Velocity');
 % plot(f,y,'Color','green');
 % plot(f,combinedFitExpU(periodsToPlot,:),'Color','cyan');
-plot(f,mean(combinedFitExpU(periodsToPlot,:)),'Color','cyan');
+plot(f,mean(combinedFitExpU(periodsToPlot,:)),'DisplayName','Background Fit');
 % plot(f,fit_u,'Color','magenta');
-xline(fCor,':','Coriolis Frequency (IC3)');
-xline(0.8*fCor,':','near-inertial band');
-xline(1.2*fCor,':','near-inertial band');
-xline(1.4052e-4,':',{'M_2'}); 
-xlim([0.7*fCor 1.3*fCor]);
+xline(fCor,':','f_{Cor}','FontSize',14,'LabelHorizontalAlignment','center','LabelVerticalAlignment','middle','HandleVisibility','off');
+xline(0.85*fCor,':','near-inertial band','FontSize',14,'LabelHorizontalAlignment','right','LabelVerticalAlignment','middle','HandleVisibility','off');
+xline(1.2*fCor,':','near-inertial band','FontSize',14,'LabelHorizontalAlignment','left','LabelVerticalAlignment','middle','HandleVisibility','off');
+xline(1.4052e-4,':',{'M_2'},'FontSize',14,'LabelHorizontalAlignment','center','LabelVerticalAlignment','middle','HandleVisibility','off'); 
+xlim([0.75*fCor 1.3*fCor]);
 hold off
-title('u, depth-averaged, 6-year mean');
-
-% savefig('figures/main/tideEx/' + mooring + '_u_resi_energy_m1');
+legend();
+xlabel('Frequency [s^{-1}]');
+ylabel('Power Density [m^2 s^{-2}]');
+% title('u, depth-averaged, 6-year mean');
 exportgraphics(ax1,'figures/main/Extract/' + mooring + '_u_resi_energy_m1.png');
 
 ax2 = figure;
-% plot(f,P1_resi_v_dptAvg(periodsToPlot,:),'Color',[0.7 0.7 0.7]);
-plot(f,mean(P1_resi_v_dptAvg),'Color',[0.7 0.7 0.7]);
+rectangle(Position=[0.85*fCor,0,0.35*fCor,8e-3], FaceColor=[0.9 0.9 0.9], EdgeColor=[0.9 0.9 0.9]);
 hold on
+grid on;  grid minor
+set(gca, "Layer", "top");
+% plot(f,P1_resi_v_dptAvg(periodsToPlot,:),'Color',[0.7 0.7 0.7]);
+plot(f,mean(P1_resi_v_dptAvg),'DisplayName','Residual Meridional Velocity');
 % plot(f,fit_v,'Color','cyan');
 % plot(f,combinedFitExpV(periodsToPlot,:),'Color','cyan');
-plot(f,mean(combinedFitExpV),'Color','cyan');
-xline(fCor,':','Coriolis Frequency (IC3)');
-xline(0.8*fCor,':','near-inertial band');
-xline(1.2*fCor,':','near-inertial band');
-xline(1.4052e-4,':',{'M_2'}); 
-xlim([.7*fCor 1.3*fCor]);
+plot(f,mean(combinedFitExpV),'DisplayName','Background Fit');
+xline(fCor,':','f_{Cor}','FontSize',14,'LabelHorizontalAlignment','center','LabelVerticalAlignment','middle','HandleVisibility','off');
+xline(0.85*fCor,':','near-inertial band','FontSize',14,'LabelHorizontalAlignment','right','LabelVerticalAlignment','middle','HandleVisibility','off');
+xline(1.2*fCor,':','near-inertial band','FontSize',14,'LabelHorizontalAlignment','left','LabelVerticalAlignment','middle','HandleVisibility','off');
+xline(1.4052e-4,':',{'M_2'},'FontSize',14,'LabelHorizontalAlignment','center','LabelVerticalAlignment','middle','HandleVisibility','off'); 
+xlim([.75*fCor 1.3*fCor]);
 hold off
-title('v, depth-averaged, 6-year mean');
-
-% savefig('figures/main/tideEx/' + mooring + '_v_resi_energy_m1');
+legend();
+xlabel('Frequency [s^{-1}]');
+ylabel('Power Density [m^2 s^{-2}]');
+% title('v, depth-averaged, 6-year mean');
 exportgraphics(ax2,'figures/main/Extract/' + mooring + '_v_resi_energy_m1.png');
 
 NIW_icIT_band = P1_resi_u_dptAvg - fit_u;
@@ -231,20 +239,25 @@ end
 M2 = 1.4052e-4;
 
 ax3 = figure;
-% plot(f,NIW_icIT_band);
-% hold on
-plot(f,mean(NIW_icIT_band));
+rectangle(Position=[0.85*fCor,0,0.35*fCor,7e-3], FaceColor=[0.9 0.9 0.9], EdgeColor=[0.9 0.9 0.9]);
 hold on
-xline(fCor,':','Coriolis Frequency (IC3)');
-xline(0.8*fCor,':','near-inertial band');
-xline(1.2*fCor,':','near-inertial band');
-xline(M2,':',{'M_2'}); 
+grid on;  grid minor
+set(gca, "Layer", "top");
+% plot(f,NIW_icIT_band);
+plot(f,mean(NIW_icIT_band),'DisplayName','Near-Inertial Wave Energy');
+xline(fCor,':','f_{Cor}','FontSize',14,'LabelHorizontalAlignment','center','LabelVerticalAlignment','middle','HandleVisibility','off');
+xline(0.85*fCor,':','near-inertial band','FontSize',14,'LabelHorizontalAlignment','right','LabelVerticalAlignment','middle','HandleVisibility','off');
+xline(1.2*fCor,':','near-inertial band','FontSize',14,'LabelHorizontalAlignment','left','LabelVerticalAlignment','middle','HandleVisibility','off');
+xline(1.4052e-4,':',{'M_2'},'FontSize',14,'LabelHorizontalAlignment','center','LabelVerticalAlignment','middle','HandleVisibility','off'); 
 % xline(0.8*M2,':',{'incoherent semidiurnal band'}); 
 % xline(1.2*M2,':',{'incoherent semidiurnal band'}); 
 hold off
 % xlim([0.7*fCor 1.3*M2]);
-xlim([.7*fCor 1.3*fCor]);
-title('NIW Energy');
+legend();
+xlim([.75*fCor 1.3*fCor]);
+xlabel('Frequency [s^{-1}]');
+ylabel('Power Density [m^2 s^{-2}]');
+% title('NIW Energy');
 
 % savefig('figures/main/Extract/' + mooring + '_energyInCombinedIcitNiwBand_m1');
 exportgraphics(ax3,'figures/main/Extract/' + mooring + '_energyInCombinedIcitNiwBand_m1.png');
@@ -256,8 +269,8 @@ exportgraphics(ax3,'figures/main/Extract/' + mooring + '_energyInCombinedIcitNiw
 % distributed and that therefore the half-peak we use here is
 % representative of NIW energy modulation.
 
-limit1 = find(f>0.798*fCor & f<0.802*fCor);
-% limit2 = find(f>1.199*fCor & f<1.202*fCor);
+% limit1 = find(f>0.798*fCor & f<0.802*fCor);
+limit1 = find(f>0.84*fCor & f<0.86*fCor);
 limit2 = find(f>0.997*fCor & f<1.01*fCor);
 
 for i=1:72
@@ -286,8 +299,8 @@ hold off
 %     '16 JFMAMJ','16 JASOND','17 JFMAMJ','17 JASOND','18 JFMAMJ','18 JASOND'...
 %     '19 JFMAMJ','19 JASOND','20 JFMAMJ','20 JASOND'});
 xlabel('Time');
-ylabel('Combined near-inertial and incoherent semidiurnal energy [m^2 s^{-2}]');
-title('Modulation of WWI');
+ylabel('Near-Inertial Wave Energy [m^2 s^{-2}]');
+% title('Modulation of NIW');
 
 exportgraphics(ax4,'figures/main/Extract/' + mooring + '_WwiModulation6mth.png');
 

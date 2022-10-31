@@ -271,6 +271,37 @@ ylabel('Power Density [W^2 m^{-4}]');
 
 exportgraphics(ax2a,'figures/main/param/_fft_barotropicTide.png');
 
+
+%% FFT for U (resi)
+
+% IC3
+% P2_IC3 = abs(fft(U)/L);
+% P1_IC3 = P2_IC3(1:floor(L/2));
+
+Omega = 7.2921e-5;
+fCor = 2*Omega*sin(lat(4)*pi/180);
+
+P2_IC3_uRes = abs(fft(mean(resi.u))/L);
+P1_IC3_uRes = P2_IC3_uRes(1:floor(L/2));
+
+P2_IC3_vRes = abs(fft(mean(resi.v))/L);
+P1_IC3_vRes = P2_IC3_vRes(1:floor(L/2));
+
+ax2b = figure;
+semilogy(fd,P1_IC3_uRes,'DisplayName','IC3 Residual (u)','LineWidth',1.5);
+hold on
+semilogy(fd,P1_IC3_vRes,'DisplayName','IC3 Residual (v)','LineWidth',1.5);
+xline(freqs(72)/(2*pi),'--','M_4','DisplayName','M_4','FontSize',16,'HandleVisibility','off');
+xline(freqs(41)/(2*pi),'--','M_2','DisplayName','M_2','FontSize',16,'HandleVisibility','off');
+xline(fCor*86400/(2*pi),'--','f_{Cor}','DisplayName','f_{Cor}','FontSize',16,'HandleVisibility','off');
+xline(freqs(17)/(2*pi),'--','K_1','DisplayName','K_1','FontSize',16,'HandleVisibility','off');
+hold off
+xlim([0.5 2.5]);
+legend();
+xlabel('Frequency [cpd]');
+ylabel('Power Density [W^2 m^{-4}]');
+exportgraphics(ax2b,'figures/main/extract/_fft_resi_IC3_u.png');
+
 %% Kurtosis
 
 kurt_U_IC3 = kurtosis(U);
