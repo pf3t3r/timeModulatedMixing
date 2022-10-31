@@ -1,0 +1,1 @@
+Figures (in .png format) that are stored here will be ignored by GIT (see .gitignore). This is because of space limitations. They will be generated locally.

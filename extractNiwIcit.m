@@ -179,29 +179,39 @@ end
 periodsToPlot = 1:72;
 
 ax1 = figure;
-plot(f,P1_resi_u_dptAvg(periodsToPlot,:),'Color',[0.7 0.7 0.7]);
+% plot(f,P1_resi_u_dptAvg,'Color',[0.7 0.7 0.7]);
+% hold on
+plot(f,mean(P1_resi_u_dptAvg));
 hold on
 % plot(f,y,'Color','green');
-plot(f,combinedFitExpU(periodsToPlot,:),'Color','cyan');
+% plot(f,combinedFitExpU(periodsToPlot,:),'Color','cyan');
+plot(f,mean(combinedFitExpU(periodsToPlot,:)),'Color','cyan');
 % plot(f,fit_u,'Color','magenta');
 xline(fCor,':','Coriolis Frequency (IC3)');
+xline(0.8*fCor,':','near-inertial band');
+xline(1.2*fCor,':','near-inertial band');
 xline(1.4052e-4,':',{'M_2'}); 
-ylim([-0.005 0.045]);
+xlim([0.7*fCor 1.3*fCor]);
 hold off
-title('u, depth-averaged residual (6 month)');
+title('u, depth-averaged, 6-year mean');
 
 % savefig('figures/main/tideEx/' + mooring + '_u_resi_energy_m1');
 exportgraphics(ax1,'figures/main/Extract/' + mooring + '_u_resi_energy_m1.png');
 
 ax2 = figure;
-plot(f,P1_resi_v_dptAvg(periodsToPlot,:),'Color',[0.7 0.7 0.7]);
+% plot(f,P1_resi_v_dptAvg(periodsToPlot,:),'Color',[0.7 0.7 0.7]);
+plot(f,mean(P1_resi_v_dptAvg),'Color',[0.7 0.7 0.7]);
 hold on
 % plot(f,fit_v,'Color','cyan');
-plot(f,combinedFitExpV(periodsToPlot,:),'Color','cyan');
+% plot(f,combinedFitExpV(periodsToPlot,:),'Color','cyan');
+plot(f,mean(combinedFitExpV),'Color','cyan');
 xline(fCor,':','Coriolis Frequency (IC3)');
+xline(0.8*fCor,':','near-inertial band');
+xline(1.2*fCor,':','near-inertial band');
 xline(1.4052e-4,':',{'M_2'}); 
+xlim([.7*fCor 1.3*fCor]);
 hold off
-title('v, depth-averaged residual (6 month)');
+title('v, depth-averaged, 6-year mean');
 
 % savefig('figures/main/tideEx/' + mooring + '_v_resi_energy_m1');
 exportgraphics(ax2,'figures/main/Extract/' + mooring + '_v_resi_energy_m1.png');
@@ -221,24 +231,30 @@ end
 M2 = 1.4052e-4;
 
 ax3 = figure;
-plot(f,NIW_icIT_band);
+% plot(f,NIW_icIT_band);
+% hold on
+plot(f,mean(NIW_icIT_band));
 hold on
 xline(fCor,':','Coriolis Frequency (IC3)');
 xline(0.8*fCor,':','near-inertial band');
 xline(1.2*fCor,':','near-inertial band');
 xline(M2,':',{'M_2'}); 
-xline(0.8*M2,':',{'incoherent semidiurnal band'}); 
-xline(1.2*M2,':',{'incoherent semidiurnal band'}); 
+% xline(0.8*M2,':',{'incoherent semidiurnal band'}); 
+% xline(1.2*M2,':',{'incoherent semidiurnal band'}); 
 hold off
-xlim([0.7*fCor 1.3*M2]);
-title('estimate of energy in NIW and icIT band (6 months)');
+% xlim([0.7*fCor 1.3*M2]);
+xlim([.7*fCor 1.3*fCor]);
+title('NIW Energy');
 
 % savefig('figures/main/Extract/' + mooring + '_energyInCombinedIcitNiwBand_m1');
 exportgraphics(ax3,'figures/main/Extract/' + mooring + '_energyInCombinedIcitNiwBand_m1.png');
 
 %% Find the area under the curve in NIW_icIT_band
 
-% This define the NIW band.
+% This defines the NIW band. Note that due to insufficient resolution the
+% entire NIW band is not covered. We assume that the NIW energy is evenly
+% distributed and that therefore the half-peak we use here is
+% representative of NIW energy modulation.
 
 limit1 = find(f>0.798*fCor & f<0.802*fCor);
 % limit2 = find(f>1.199*fCor & f<1.202*fCor);
@@ -248,14 +264,12 @@ for i=1:72
     niwIcitEnergy(i) = trapz(f(limit1:limit2),NIW_icIT_band(i,limit1:limit2));
 end
 
-xt = linspace(1,52873,72);
+% xt = linspace(1,52873,72);
 xt = floor(734/2):734:52873;
 
 %% Interpolate to find full time series of values
-% Maybe I can interpolate 52873 values for easy modulation later. 
-% x = xt, y = niwIcitEnergy
-xq = 1:1:52873;
 
+xq = 1:1:52873;
 niwIcitInterp = pchip(xt,niwIcitEnergy,xq);
 
 %% Plot the modulation of NIW/ICIT energy over time
@@ -275,7 +289,6 @@ xlabel('Time');
 ylabel('Combined near-inertial and incoherent semidiurnal energy [m^2 s^{-2}]');
 title('Modulation of WWI');
 
-% savefig('figures/main/tideEx/' + mooring + '_WwiModulation6mth');
 exportgraphics(ax4,'figures/main/Extract/' + mooring + '_WwiModulation6mth.png');
 
 save Matfiles/niwIcitEnergy.mat niwIcitEnergy niwIcitInterp;

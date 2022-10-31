@@ -1,7 +1,6 @@
 function [E_hil,E_hil_6dm,E_hil_Nbot2,E_hil_Nbot2_6dm,E_hil_U,E_hil_U_6dm,stdE,kurtE] = EhilCalculator(U,N2,N2_bot,power_hil)
 % EhilCalculator
-% Calculate the fucking Ehil for different moorings depending on the inputs
-% provided.
+% Calculate Ehil for different moorings depending on the inputs provided.
 
 % % Find density
 % rho = gsw_rho(SA,CT,p);
