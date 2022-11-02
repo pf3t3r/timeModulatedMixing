@@ -48,50 +48,50 @@ for i = 1:length(zmid_M1(:,1))
     kurtEpsHil_M1(i) = kurtosis(sixDayEpsHM_M1(i,:));
     kurtEpsHillog10_M1(i) = kurtosis(log10(sixDayEpsHM_M1(i,:)));
 end
-
-ax1 = figure;
-subplot(1,2,1)
-plot(kurtEpsHil_IC3,zmid_IC3(:,1),'DisplayName','Kurt(\epsilon_{hil}(z,t))');
-hold on
-plot(kurtEpsHillog10_IC3,zmid_IC3(:,i),'DisplayName','Kurt(log(\epsilon_{hil}(z,t)))');
-xline(3,':','DisplayName','Kurtosis = 3');
-hold off
-legend('Location','best');
-xlabel('Kurtosis(\epsilon_{hil}(z,t))');
-ylabel('Depth [m]');
-title('IC3 (2014-2020)');
-
-subplot(1,2,2)
-plot(kurtEpsHil_M1,zmid_M1(:,1),'DisplayName','Kurt(\epsilon_{hil}(z,t))');
-hold on
-plot(kurtEpsHillog10_M1,zmid_M1(:,i),'DisplayName','Kurt(log(\epsilon_{hil}(z,t)))');
-xline(3,':','DisplayName','Kurtosis = 3');
-hold off
-legend('Location','best');
-xlabel('Kurtosis(\epsilon_{hil}(z,t))');
-ylabel('Depth [m]');
-title('M1 (2014-2020)');
-
-savefig('figures/main/param/_kurtosisOfEpsHilAcrossDepth');
-exportgraphics(ax1,'figures/main/param/_kurtosisOfEpsHilAcrossDepth.png');
+% 
+% ax1 = figure;
+% subplot(1,2,1)
+% plot(kurtEpsHil_IC3,zmid_IC3(:,1),'DisplayName','Kurt(\epsilon_{hil}(z,t))');
+% hold on
+% plot(kurtEpsHillog10_IC3,zmid_IC3(:,i),'DisplayName','Kurt(log(\epsilon_{hil}(z,t)))');
+% xline(3,':','DisplayName','Kurtosis = 3');
+% hold off
+% legend('Location','best');
+% xlabel('Kurtosis(\epsilon_{hil}(z,t))');
+% ylabel('Depth [m]');
+% title('IC3 (2014-2020)');
+% 
+% subplot(1,2,2)
+% plot(kurtEpsHil_M1,zmid_M1(:,1),'DisplayName','Kurt(\epsilon_{hil}(z,t))');
+% hold on
+% plot(kurtEpsHillog10_M1,zmid_M1(:,i),'DisplayName','Kurt(log(\epsilon_{hil}(z,t)))');
+% xline(3,':','DisplayName','Kurtosis = 3');
+% hold off
+% legend('Location','best');
+% xlabel('Kurtosis(\epsilon_{hil}(z,t))');
+% ylabel('Depth [m]');
+% title('M1 (2014-2020)');
+% 
+% savefig('figures/main/param/_kurtosisOfEpsHilAcrossDepth');
+% exportgraphics(ax1,'figures/main/param/_kurtosisOfEpsHilAcrossDepth.png');
 
 %% IC3: epsHil distribution
 
-ax2 = figure;
-histogram(sixDayEpsHM_IC3);
-title('\epsilon_{hil} (6dm) (before binning)');
-
-savefig('figures/main/param/' + mooring(1) + '_epsHil_distribution');
-exportgraphics(ax2,'figures/main/param/' + mooring(1) + '_epsHil_distribution.png');
+% ax2 = figure;
+% histogram(sixDayEpsHM_IC3);
+% title('\epsilon_{hil} (6dm) (before binning)');
+% 
+% savefig('figures/main/param/' + mooring(1) + '_epsHil_distribution');
+% exportgraphics(ax2,'figures/main/param/' + mooring(1) + '_epsHil_distribution.png');
 
 %% M1: epsHil distribution
 
-ax3 = figure;
-histogram(sixDayEpsHM_M1);
-title('M1: \epsilon_{hil} (6dm) (before binning)');
-
-savefig('figures/main/param/' + mooring(2) + '_epsHil_distribution');
-exportgraphics(ax3,'figures/main/param/' + mooring(2) + '_epsHil_distribution.png');
+% ax3 = figure;
+% histogram(sixDayEpsHM_M1);
+% title('M1: \epsilon_{hil} (6dm) (before binning)');
+% 
+% savefig('figures/main/param/' + mooring(2) + '_epsHil_distribution');
+% exportgraphics(ax3,'figures/main/param/' + mooring(2) + '_epsHil_distribution.png');
 
 %% epsHil: initialise meshgrid for contour plots
 
@@ -123,6 +123,40 @@ c.Label.String = 'log_{10}(\epsilon_{hil}) [log W kg^{-1}]';
 ylabel('Depth [m]');
 ylim([-inf -100]);
 exportgraphics(ax9,'figures/main/param/' + mooring(2) + '_epsHil.png');
+
+%% IC3 epsHil FFT
+
+Ts = 3600;
+fs = 1/Ts;
+L = length(Ehil6dm_IC3);
+f = (0:L/2-1)*fs/L; % per sec
+fd = 86400*f; % per day
+
+% M1
+P2_M1 = abs(fft(mean(eps_hil_M1(39:42,:)))/L);
+P1_M1 = P2_M1(1:floor(L/2));
+
+% IC3
+P2_IC3 = abs(fft(mean(eps_hil_IC3(38:41,:)))/L);
+P1_IC3 = P2_IC3(1:floor(L/2));
+
+ax10 = figure;
+loglog(fd,P1_M1,'DisplayName','M1');
+hold on
+loglog(fd,P1_IC3,'DisplayName','IC3');
+legend();
+% xline(fqs(45)/(2*pi),'-','M_2','DisplayName','M_2','FontSize',16,'HandleVisibility','off');
+% xline(1/7.5,'-','7.5 Days','DisplayName','7.5 Days','FontSize',16,'HandleVisibility','off');
+xline(1/14,'-','14 Days','DisplayName','14 Days','FontSize',16,'HandleVisibility','off','LabelVerticalAlignment','middle');
+xline(1/30,'-','30 Days','DisplayName','30 Days','FontSize',16,'HandleVisibility','off','LabelVerticalAlignment','middle');
+xline(1/90,'-','90 Days','DisplayName','90 Days','FontSize',16,'HandleVisibility','off','LabelVerticalAlignment','middle');
+xline(1/365,'-','1 Year','DisplayName','1 Year','FontSize',16,'HandleVisibility','off','LabelVerticalAlignment','middle');
+hold off
+xlabel('Frequency [cpd]');
+ylabel('Power Density [W^2 m^{-4}]');
+% title('FFT: \epsilon_{hil}(t) for IC3 and M1');
+
+exportgraphics(ax10,'figures/main/param/_epsHil_FFT.png');
 
 %% Save parameters for the next file
 

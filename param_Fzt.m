@@ -10,11 +10,11 @@ addpath(genpath(pwd));
 load('Matfiles/E_hil');
 load('Data/Mixing_parameterization_fields.mat');
 
-load('Matfiles/N_is.mat');
+load('Matfiles/N_is.mat'); % Contains zmid_M1 and zmid_IC3
 load("Matfiles/M1.mat",'time');
 
-depths_IC3 = load('Matfiles/IC3.mat').depths;
-depths_M1 = load('Matfiles/M1.mat').depths_M1;
+% depths_IC3 = load('Matfiles/IC3.mat').depths;
+% depths_M1 = load('Matfiles/M1.mat').depths_M1;
 % load N2v2.mat;
 % load IC3.mat;
 mooring = ["IC3","M1"];

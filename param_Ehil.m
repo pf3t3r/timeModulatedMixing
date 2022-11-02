@@ -12,6 +12,9 @@ addpath(genpath(pwd));
 load('Data/Mixing_parameterization_fields.mat');                 % Parametrisation
 clear woce_lon woce_lat;
 load('Data/merged_hourly_unfiltered_data_20142020.mat', 'lat');  % Mooring latitude
+load('N_is.mat','N2_bot_IC3','N2_bot_M1');
+load('IC3.mat','U');
+load('M1.mat','U_M1');
 % load('WOCE_climatology.mat','zax');                       % Load zax
 
 % DEPTH-INTEGRATED POWER FROM PARAMETRISATION [De Lavergne et al, 2020]
@@ -274,7 +277,7 @@ xline(1/50,'-','50 Days','DisplayName','50 Days','FontSize',16,'HandleVisibility
 hold off
 xlabel('Frequency [cpd]');
 ylabel('Power Density [W^2 m^{-4}]');
-title('FFT: E_{hil}(t) for IC3 and M1');
+% title('FFT: E_{hil}(t) for IC3 and M1');
 
 exportgraphics(ax2a,'figures/main/param/_Ehil_FFT.png');
 
