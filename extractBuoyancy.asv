@@ -83,7 +83,7 @@ else
     load Matfiles/SA_IC3.mat;
     load Matfiles/CT_IC3.mat;
     [SA_IC3_i,CT_IC3_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_IC3,p_i_IC3);
-    %[SAmid_IC3_i,CTmid_IC3_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_IC3,pmid_IC3);
+    [SAmid_IC3_i,CTmid_IC3_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_IC3,pmid_IC3);
 end
 
 % IC4
@@ -97,7 +97,7 @@ else
     [SA_IC4_i,CT_IC4_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_IC4,p_i_IC4);
 end
 
-%% M1
+% M1
 if isfile('Matfiles/SA_CT_interpolated.mat')
     load('Matfiles/SA_CT_interpolated.mat','SA_M1_i','CT_M1_i','SAmid_M1_i','CTmid_M1_i');
     disp('M1: SA and CT already interpolated');
@@ -107,15 +107,15 @@ else
     load Matfiles/SA_M1.mat;
     load Matfiles/CT_M1.mat;
     [SA_M1_i,CT_M1_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_M1,p_i_M1);
-    %[SAmid_M1_i,CTmid_M1_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_M1,pmid_M1);
+    [SAmid_M1_i,CTmid_M1_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_M1,pmid_M1);
 end
 
 %% 
 % Save interpolated SA and CT: note that IC2 is missing
 
 save Matfiles/SA_CT_interpolated.mat SA_IC1_i SA_IC3_i SA_IC4_i SA_M1_i ...
-    CT_IC1_i CT_IC3_i CT_IC4_i CT_M1_i;
-    %SAmid_IC3_i CTmid_IC3_i;
+    CT_IC1_i CT_IC3_i CT_IC4_i CT_M1_i ...
+    SAmid_IC3_i CTmid_IC3_i;
 
 %% pchip method: extend interpolation to the bottom
 
@@ -332,7 +332,7 @@ else
         zmid_IC1 zmid_IC3 zmid_IC4 zmid_M1;
 end
 
-%% Working out MID-values for SA and CT... had to move here because of pmid_IC3 / pmid_M1 definition location
+%% Working out 
 
 if isfile('Matfiles/SA_CT_interpolated.mat')
    load('Matfiles/SA_CT_interpolated.mat','SA_IC3_i','CT_IC3_i','SAmid_IC3_i','CTmid_IC3_i');
@@ -342,18 +342,6 @@ else
     load Matfiles/SA_IC3.mat;
     load Matfiles/CT_IC3.mat;
     [SAmid_IC3_i,CTmid_IC3_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_IC3,pmid_IC3);
-end
-
-% M1
-if isfile('Matfiles/SA_CT_interpolated.mat')
-    load('Matfiles/SA_CT_interpolated.mat','SA_M1_i','CT_M1_i','SAmid_M1_i','CTmid_M1_i');
-    disp('M1: SA and CT already interpolated');
-else
-    disp('M1: interpolating SA and CT...');
-    load Matfiles/p_S.mat;
-    load Matfiles/SA_M1.mat;
-    load Matfiles/CT_M1.mat;
-    [SAmid_M1_i,CTmid_M1_i] = gsw_SA_CT_interp(absoluteSalinity,conservativeTemperature,p_M1,pmid_M1);
 end
 
 %% Check N2
