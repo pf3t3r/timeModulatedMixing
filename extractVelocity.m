@@ -21,6 +21,27 @@ fCor = 2*Omega*sin(input.lat(4)*pi/180);
 %% FROM THIS POINT: only run the code for whichever mooring we want processed
 
 
+%% IC3: Vertical Movement of Aquadopps 2014-2020
+
+
+figure
+plot(time,squeeze(input.U(4,:,145)),'DisplayName','1470');
+hold on
+plot(time,squeeze(input.U(4,:,155)),'DisplayName','1590');
+plot(time,squeeze(input.U(4,:,156)),'DisplayName','1603');
+hold off
+legend();
+title('IC3 Bottom Aquadopp U (ms^{-1})');
+
+figure
+plot(time,squeeze(input.U(4,:,99)),'DisplayName','980');
+hold on
+plot(time,squeeze(input.U(4,:,100)),'DisplayName','990');
+plot(time,squeeze(input.U(4,:,102)),'DisplayName','1010');
+hold off
+legend();
+title('IC3 2nd from Bottom Aquadopp U (ms^{-1})');
+
 %% IC3: extract levels in which there are observations
 
 % Extract velocity from the CMs
@@ -77,6 +98,7 @@ hold on
 plot(time,v_filled(30,:),'DisplayName','u_filled','LineStyle',':');
 hold off
 legend();
+title('IC3 velocity');
 
 % 
 u = u_filled;
